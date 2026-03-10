@@ -6,8 +6,16 @@ export default defineConfig({
     alias: [
       {
         find: /^@t3tools\/contracts$/,
-        replacement: path.resolve(import.meta.dirname, "./packages/contracts/src/index.ts"),
+        replacement: path.resolve(
+          import.meta.dirname,
+          "./packages/contracts/src/index.ts",
+        ),
       },
     ],
   },
+  server: {
+    host: "0.0.0.0",
+    port: 5733,
+  },
 });
+

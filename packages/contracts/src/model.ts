@@ -1,14 +1,27 @@
 import { Schema } from "effect";
 import type { ProviderKind } from "./orchestration";
 
-export const CURSOR_REASONING_OPTIONS = ["low", "normal", "high", "xhigh"] as const;
+export const CURSOR_REASONING_OPTIONS = [
+  "low",
+  "normal",
+  "high",
+  "xhigh",
+] as const;
 export type CursorReasoningOption = (typeof CURSOR_REASONING_OPTIONS)[number];
 
-export const CODEX_REASONING_EFFORT_OPTIONS = ["xhigh", "high", "medium", "low"] as const;
-export type CodexReasoningEffort = (typeof CODEX_REASONING_EFFORT_OPTIONS)[number];
+export const CODEX_REASONING_EFFORT_OPTIONS = [
+  "xhigh",
+  "high",
+  "medium",
+  "low",
+] as const;
+export type CodexReasoningEffort =
+  (typeof CODEX_REASONING_EFFORT_OPTIONS)[number];
 
 export const CodexModelOptions = Schema.Struct({
-  reasoningEffort: Schema.optional(Schema.Literals(CODEX_REASONING_EFFORT_OPTIONS)),
+  reasoningEffort: Schema.optional(
+    Schema.Literals(CODEX_REASONING_EFFORT_OPTIONS),
+  ),
   fastMode: Schema.optional(Schema.Boolean),
 });
 export type CodexModelOptions = typeof CodexModelOptions.Type;
@@ -54,7 +67,8 @@ export const CURSOR_MODEL_FAMILY_OPTIONS = [
   { slug: "gemini-3.1-pro", name: "Gemini 3.1 Pro" },
 ] as const satisfies readonly CursorModelFamilyOption[];
 
-export type CursorModelFamily = (typeof CURSOR_MODEL_FAMILY_OPTIONS)[number]["slug"];
+export type CursorModelFamily =
+  (typeof CURSOR_MODEL_FAMILY_OPTIONS)[number]["slug"];
 
 export const MODEL_OPTIONS_BY_PROVIDER = {
   codex: [
@@ -65,9 +79,9 @@ export const MODEL_OPTIONS_BY_PROVIDER = {
     { slug: "gpt-5.2", name: "GPT-5.2" },
   ],
   claudeCode: [
-    { slug: "claude-opus-4-6", name: "Claude Opus 4.6" },
-    { slug: "claude-sonnet-4-6", name: "Claude Sonnet 4.6" },
-    { slug: "claude-haiku-4-5", name: "Claude Haiku 4.5" },
+    { slug: "claude-opus-4-6", name: "GLM-5" },
+    { slug: "claude-sonnet-4-6", name: "GLM-4.7" },
+    { slug: "claude-haiku-4-5", name: "GLM-4.5-Air" },
   ],
   cursor: [
     { slug: "auto", name: "Auto" },
@@ -92,9 +106,11 @@ export const MODEL_OPTIONS_BY_PROVIDER = {
   ],
 } as const satisfies Record<ProviderKind, readonly ModelOption[]>;
 
-type BuiltInModelSlug = (typeof MODEL_OPTIONS_BY_PROVIDER)[ProviderKind][number]["slug"];
+type BuiltInModelSlug =
+  (typeof MODEL_OPTIONS_BY_PROVIDER)[ProviderKind][number]["slug"];
 export type ModelSlug = BuiltInModelSlug | (string & {});
-export type CursorModelSlug = (typeof MODEL_OPTIONS_BY_PROVIDER)["cursor"][number]["slug"];
+export type CursorModelSlug =
+  (typeof MODEL_OPTIONS_BY_PROVIDER)["cursor"][number]["slug"];
 
 export const DEFAULT_MODEL_BY_PROVIDER: Record<ProviderKind, ModelSlug> = {
   codex: "gpt-5.3-codex",
@@ -106,7 +122,10 @@ export const DEFAULT_MODEL_BY_PROVIDER: Record<ProviderKind, ModelSlug> = {
 export const MODEL_OPTIONS = MODEL_OPTIONS_BY_PROVIDER.codex;
 export const DEFAULT_MODEL = DEFAULT_MODEL_BY_PROVIDER.codex;
 
-export const MODEL_SLUG_ALIASES_BY_PROVIDER: Record<ProviderKind, Record<string, ModelSlug>> = {
+export const MODEL_SLUG_ALIASES_BY_PROVIDER: Record<
+  ProviderKind,
+  Record<string, ModelSlug>
+> = {
   codex: {
     "5.4": "gpt-5.4",
     "5.3": "gpt-5.3-codex",
@@ -155,3 +174,4 @@ export const DEFAULT_REASONING_EFFORT_BY_PROVIDER = {
   claudeCode: null,
   cursor: null,
 } as const satisfies Record<ProviderKind, CodexReasoningEffort | null>;
+

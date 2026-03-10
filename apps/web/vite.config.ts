@@ -37,6 +37,7 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   server: {
+    host: "0.0.0.0",
     port,
     strictPort: true,
     hmr: {
