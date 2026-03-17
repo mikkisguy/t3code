@@ -54,6 +54,13 @@ const MODEL_PROVIDER_SETTINGS: Array<{
     placeholder: "your-claude-model-slug",
     example: "claude-sonnet-5-0",
   },
+  {
+    provider: "copilot",
+    title: "GitHub Copilot",
+    description: "Save additional Copilot model slugs for the picker and `/model` command.",
+    placeholder: "your-copilot-model-slug",
+    example: "claude-opus-5-0",
+  },
 ] as const;
 
 function getCustomModelsForProvider(
@@ -65,6 +72,8 @@ function getCustomModelsForProvider(
       return settings.customClaudeModels;
     case "cursor":
       return settings.customCursorModels;
+    case "copilot":
+      return settings.customCopilotModels;
     case "codex":
     default:
       return settings.customCodexModels;
@@ -80,6 +89,8 @@ function getDefaultCustomModelsForProvider(
       return defaults.customClaudeModels;
     case "cursor":
       return defaults.customCursorModels;
+    case "copilot":
+      return defaults.customCopilotModels;
     case "codex":
     default:
       return defaults.customCodexModels;
@@ -92,6 +103,8 @@ function patchCustomModels(provider: ProviderKind, models: string[]) {
       return { customClaudeModels: models };
     case "cursor":
       return { customCursorModels: models };
+    case "copilot":
+      return { customCopilotModels: models };
     case "codex":
     default:
       return { customCodexModels: models };
@@ -110,6 +123,7 @@ function SettingsRouteView() {
     codex: "",
     claudeCode: "",
     cursor: "",
+    copilot: "",
   });
   const [customModelErrorByProvider, setCustomModelErrorByProvider] = useState<
     Partial<Record<ProviderKind, string | null>>
@@ -117,6 +131,7 @@ function SettingsRouteView() {
 
   const codexBinaryPath = settings.codexBinaryPath;
   const codexHomePath = settings.codexHomePath;
+  const codexProfile = settings.codexProfile;
   const keybindingsConfigPath = serverConfigQuery.data?.keybindingsConfigPath ?? null;
 
   const openKeybindingsFile = useCallback(() => {
@@ -292,10 +307,31 @@ function SettingsRouteView() {
                   </span>
                 </label>
 
+                <label htmlFor="codex-profile" className="block space-y-1">
+                  <span className="text-xs font-medium text-foreground">Codex profile</span>
+                  <Input
+                    id="codex-profile"
+                    value={codexProfile}
+                    onChange={(event) => updateSettings({ codexProfile: event.target.value })}
+                    placeholder="glm_4_7"
+                    spellCheck={false}
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    Optional Codex profile to use when launching (e.g., <code>glm_4_7</code>).
+                  </span>
+                </label>
+
                 <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                   <p>
                     Binary source:{" "}
                     <span className="font-medium text-foreground">{codexBinaryPath || "PATH"}</span>
+                    {codexProfile && (
+                      <>
+                        {" "}
+                        · Profile:{" "}
+                        <span className="font-medium text-foreground">{codexProfile}</span>
+                      </>
+                    )}
                   </p>
                   <Button
                     size="xs"
@@ -304,6 +340,7 @@ function SettingsRouteView() {
                       updateSettings({
                         codexBinaryPath: defaults.codexBinaryPath,
                         codexHomePath: defaults.codexHomePath,
+                        codexProfile: defaults.codexProfile,
                       })
                     }
                   >

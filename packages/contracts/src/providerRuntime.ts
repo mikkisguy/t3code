@@ -25,6 +25,9 @@ const RuntimeEventRawSource = Schema.Literals([
   "cursor.acp.notification",
   "cursor.acp.request",
   "cursor.acp.response",
+  "copilot.sdk.event",
+  "copilot.sdk.session-event",
+  "copilot.sdk.synthetic",
 ]);
 export type RuntimeEventRawSource = typeof RuntimeEventRawSource.Type;
 

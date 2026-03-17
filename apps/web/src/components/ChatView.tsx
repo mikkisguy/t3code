@@ -168,6 +168,7 @@ import {
   ClaudeAI,
   CursorIcon,
   Gemini,
+  GitHubIcon,
   Icon,
   OpenAI,
   OpenCodeIcon,
@@ -2585,6 +2586,13 @@ export default function ChatView({ threadId }: ChatViewProps) {
           ? { modelOptions: selectedModelOptionsForDispatch }
           : {}),
         provider: selectedProvider,
+        ...(selectedProvider === "codex" && settings.codexProfile
+          ? {
+              providerOptions: {
+                codex: { profile: settings.codexProfile },
+              },
+            }
+          : {}),
         assistantDeliveryMode: settings.enableAssistantStreaming ? "streaming" : "buffered",
         runtimeMode,
         interactionMode,
@@ -2855,6 +2863,13 @@ export default function ChatView({ threadId }: ChatViewProps) {
           ...(selectedModelOptionsForDispatch
             ? { modelOptions: selectedModelOptionsForDispatch }
             : {}),
+          ...(selectedProvider === "codex" && settings.codexProfile
+            ? {
+                providerOptions: {
+                  codex: { profile: settings.codexProfile },
+                },
+              }
+            : {}),
           assistantDeliveryMode: settings.enableAssistantStreaming ? "streaming" : "buffered",
           runtimeMode,
           interactionMode: nextInteractionMode,
@@ -2952,6 +2967,13 @@ export default function ChatView({ threadId }: ChatViewProps) {
           model: selectedModel || undefined,
           ...(selectedModelOptionsForDispatch
             ? { modelOptions: selectedModelOptionsForDispatch }
+            : {}),
+          ...(selectedProvider === "codex" && settings.codexProfile
+            ? {
+                providerOptions: {
+                  codex: { profile: settings.codexProfile },
+                },
+              }
             : {}),
           assistantDeliveryMode: settings.enableAssistantStreaming ? "streaming" : "buffered",
           runtimeMode,
@@ -5301,6 +5323,7 @@ function getCustomModelOptionsByProvider(settings: {
   customCodexModels: readonly string[];
   customClaudeModels: readonly string[];
   customCursorModels: readonly string[];
+  customCopilotModels: readonly string[];
 }): Record<ProviderKind, ReadonlyArray<{ slug: string; name: string }>> {
   const cursorFamilyOptions = getCursorModelFamilyOptions();
   return {
@@ -5313,6 +5336,7 @@ function getCustomModelOptionsByProvider(settings: {
           option.isCustom && !cursorFamilyOptions.some((family) => family.slug === option.slug),
       ),
     ],
+    copilot: getAppModelOptions("copilot", settings.customCopilotModels),
   };
 }
 
@@ -5320,6 +5344,7 @@ const PROVIDER_ICON_BY_PROVIDER: Record<ProviderKind, Icon> = {
   codex: OpenAI,
   claudeCode: ClaudeAI,
   cursor: CursorIcon,
+  copilot: GitHubIcon,
 };
 
 function resolveModelForProviderPicker(

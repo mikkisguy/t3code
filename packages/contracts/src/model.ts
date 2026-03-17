@@ -38,10 +38,17 @@ export const CursorModelOptions = Schema.Struct({
 });
 export type CursorModelOptions = typeof CursorModelOptions.Type;
 
+export const CopilotModelOptions = Schema.Struct({
+  fastMode: Schema.optional(Schema.Boolean),
+  reasoning: Schema.optional(Schema.Literals(CURSOR_REASONING_OPTIONS)),
+});
+export type CopilotModelOptions = typeof CopilotModelOptions.Type;
+
 export const ProviderModelOptions = Schema.Struct({
   codex: Schema.optional(CodexModelOptions),
   claudeCode: Schema.optional(ClaudeCodeModelOptions),
   cursor: Schema.optional(CursorModelOptions),
+  copilot: Schema.optional(CopilotModelOptions),
 });
 export type ProviderModelOptions = typeof ProviderModelOptions.Type;
 
@@ -104,6 +111,11 @@ export const MODEL_OPTIONS_BY_PROVIDER = {
     { slug: "sonnet-4.6-thinking", name: "Claude 4.6 Sonnet (Thinking)" },
     { slug: "gemini-3.1-pro", name: "Gemini 3.1 Pro" },
   ],
+  copilot: [
+    { slug: "gpt-5.4", name: "GPT-5.4" },
+    { slug: "claude-sonnet-4.6", name: "Claude Sonnet 4.6" },
+    { slug: "claude-opus-4.6", name: "Claude Opus 4.6" },
+  ],
 } as const satisfies Record<ProviderKind, readonly ModelOption[]>;
 
 type BuiltInModelSlug =
@@ -116,6 +128,7 @@ export const DEFAULT_MODEL_BY_PROVIDER: Record<ProviderKind, ModelSlug> = {
   codex: "gpt-5.3-codex",
   claudeCode: "claude-sonnet-4-6",
   cursor: "opus-4.6-thinking",
+  copilot: "gpt-5.4",
 };
 
 // Backward compatibility for existing Codex-only call sites.
@@ -161,17 +174,24 @@ export const MODEL_SLUG_ALIASES_BY_PROVIDER: Record<
     "opus-4.6-thinking": "opus-4.6-thinking",
     "opus-4.5-thinking": "opus-4.5-thinking",
   },
+  copilot: {
+    "5.4": "gpt-5.4",
+    "sonnet-4.6": "claude-sonnet-4.6",
+    "opus-4.6": "claude-opus-4.6",
+  },
 };
 
 export const REASONING_EFFORT_OPTIONS_BY_PROVIDER = {
   codex: CODEX_REASONING_EFFORT_OPTIONS,
   claudeCode: [],
   cursor: [],
+  copilot: CODEX_REASONING_EFFORT_OPTIONS,
 } as const satisfies Record<ProviderKind, readonly CodexReasoningEffort[]>;
 
 export const DEFAULT_REASONING_EFFORT_BY_PROVIDER = {
   codex: "high",
   claudeCode: null,
   cursor: null,
+  copilot: null,
 } as const satisfies Record<ProviderKind, CodexReasoningEffort | null>;
 

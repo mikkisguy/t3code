@@ -27,7 +27,7 @@ export const ORCHESTRATION_WS_CHANNELS = {
   domainEvent: "orchestration.domainEvent",
 } as const;
 
-export const ProviderKind = Schema.Literals(["codex", "claudeCode", "cursor"]);
+export const ProviderKind = Schema.Literals(["codex", "claudeCode", "cursor", "copilot"]);
 export type ProviderKind = typeof ProviderKind.Type;
 export const DEFAULT_PROVIDER_KIND: ProviderKind = "codex";
 export const RuntimeMode = Schema.Literals(["approval-required", "full-access"]);
@@ -89,6 +89,40 @@ export const ChatAttachment = Schema.Union([ChatImageAttachment]);
 export type ChatAttachment = typeof ChatAttachment.Type;
 const UploadChatAttachment = Schema.Union([UploadChatImageAttachment]);
 export type UploadChatAttachment = typeof UploadChatAttachment.Type;
+
+// Provider start options schemas (defined here to avoid circular dependency with provider.ts)
+const CodexProviderStartOptions = Schema.Struct({
+  binaryPath: Schema.optional(TrimmedNonEmptyString),
+  homePath: Schema.optional(TrimmedNonEmptyString),
+  profile: Schema.optional(TrimmedNonEmptyString),
+});
+export type CodexProviderStartOptions = typeof CodexProviderStartOptions.Type;
+
+const ClaudeCodeProviderStartOptions = Schema.Struct({
+  binaryPath: Schema.optional(TrimmedNonEmptyString),
+  permissionMode: Schema.optional(TrimmedNonEmptyString),
+  maxThinkingTokens: Schema.optional(NonNegativeInt),
+});
+export type ClaudeCodeProviderStartOptions = typeof ClaudeCodeProviderStartOptions.Type;
+
+const CursorProviderStartOptions = Schema.Struct({
+  binaryPath: Schema.optional(TrimmedNonEmptyString),
+});
+export type CursorProviderStartOptions = typeof CursorProviderStartOptions.Type;
+
+const CopilotProviderStartOptions = Schema.Struct({
+  binaryPath: Schema.optional(TrimmedNonEmptyString),
+  configDir: Schema.optional(TrimmedNonEmptyString),
+});
+export type CopilotProviderStartOptions = typeof CopilotProviderStartOptions.Type;
+
+export const ProviderStartOptions = Schema.Struct({
+  codex: Schema.optional(CodexProviderStartOptions),
+  claudeCode: Schema.optional(ClaudeCodeProviderStartOptions),
+  cursor: Schema.optional(CursorProviderStartOptions),
+  copilot: Schema.optional(CopilotProviderStartOptions),
+});
+export type ProviderStartOptions = typeof ProviderStartOptions.Type;
 
 export const ProjectScriptIcon = Schema.Literals([
   "play",
@@ -350,6 +384,7 @@ export const ThreadTurnStartCommand = Schema.Struct({
   provider: Schema.optional(ProviderKind),
   model: Schema.optional(TrimmedNonEmptyString),
   modelOptions: Schema.optional(ProviderModelOptions),
+  providerOptions: Schema.optional(ProviderStartOptions),
   assistantDeliveryMode: Schema.optional(AssistantDeliveryMode),
   runtimeMode: RuntimeMode.pipe(Schema.withDecodingDefault(() => DEFAULT_RUNTIME_MODE)),
   interactionMode: ProviderInteractionMode.pipe(
@@ -371,6 +406,7 @@ const ClientThreadTurnStartCommand = Schema.Struct({
   provider: Schema.optional(ProviderKind),
   model: Schema.optional(TrimmedNonEmptyString),
   modelOptions: Schema.optional(ProviderModelOptions),
+  providerOptions: Schema.optional(ProviderStartOptions),
   assistantDeliveryMode: Schema.optional(AssistantDeliveryMode),
   runtimeMode: RuntimeMode,
   interactionMode: ProviderInteractionMode,
@@ -650,6 +686,7 @@ export const ThreadTurnStartRequestedPayload = Schema.Struct({
   provider: Schema.optional(ProviderKind),
   model: Schema.optional(TrimmedNonEmptyString),
   modelOptions: Schema.optional(ProviderModelOptions),
+  providerOptions: Schema.optional(ProviderStartOptions),
   assistantDeliveryMode: Schema.optional(AssistantDeliveryMode),
   runtimeMode: RuntimeMode.pipe(Schema.withDecodingDefault(() => DEFAULT_RUNTIME_MODE)),
   interactionMode: ProviderInteractionMode.pipe(
